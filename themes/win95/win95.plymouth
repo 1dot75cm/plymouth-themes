@@ -1,0 +1,10 @@
+[Plymouth Theme]
+Name=win95
+Description=plymouth
+ModuleName=script
+
+[script]
+ImageDir=/usr/share/plymouth/themes/win95
+ScriptFile=/usr/share/plymouth/themes/win95/win95.script
+
+

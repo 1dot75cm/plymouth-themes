@@ -1,0 +1,8 @@
+[Plymouth Theme]
+Name=fedora-vizta
+Description=FedoraVizta plugin (based on Vizta).
+ModuleName=script
+
+[script]
+ImageDir=/usr/share/plymouth/themes/fedora-vizta
+ScriptFile=/usr/share/plymouth/themes/fedora-vizta/fedora-vizta.script

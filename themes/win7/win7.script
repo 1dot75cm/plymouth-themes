@@ -1,0 +1,481 @@
+# 7.script - Windows 7 Plymouth Theme Script
+#
+# All images made or modified using Gimp and/or inkscape from publicly available sources
+#
+
+###########################################################################
+###################### MODIFIABLE CONFIGURATION ###########################
+
+####### STARTUP #######
+#
+# Background image for startup (use "" for nothing) (must use png images)
+startup_background_image_filename="";
+
+# Animation to use on startup (winlogo, busy, none)
+startup_animation="winlogo";
+
+# Image to put at bottom of screen (use "" for nothing) (must use png images)
+startup_bottom_image_filename="ms_corp.png";
+
+# Custom startup message (use "" for default, use " " for nothing)
+startup_text = "";
+
+
+###### SHUTDOWN ######
+#
+# Background image for shutdown (use "" for nothing) (must use png images)
+shutdown_background_image_filename="Windows_7_background.png";
+
+# Animation to use on shutdown (winlogo, busy, none)
+shutdown_animation="busy";
+
+# Image to put at bottom of screen (use "" for nothing) (must use png images)
+shutdown_bottom_image_filename="Windows_7_logo_white.png";
+
+# Custom shutdown message (use "" for default, use " " for nothing)
+shutdown_text = "";
+
+
+####### SUSPEND #######
+#
+# Background image for suspend (use "" for nothing) (must use png images)
+suspend_background_image_filename="";
+
+# Animation to use on suspend (winlogo, busy, none)
+suspend_animation="busy";
+
+# Image to put at bottom of screen (use "" for nothing) (must use png images)
+suspend_bottom_image_filename="ms_corp.png";
+
+# Custom suspend message (use "" for default, use " " for nothing)
+suspend_text = "";
+
+
+####### RESUME #######
+#
+# Background image for resume (use "" for nothing) (must use png images)
+resume_background_image_filename="";
+
+# Animation to use on resume (winlogo, busy, none)
+resume_animation="winlogo";
+
+# Image to put at bottom of screen (use "" for nothing) (must use png images)
+resume_bottom_image_filename="ms_corp.png";
+
+# Custom resume message (use "" for default, use " " for nothing)
+resume_text = "";
+
+
+####### OTHER STUFF #######
+#
+# Do fading in or out (1 = yes, 0 = no).  Currently this is rather choppy and therefore disabled
+fading = 0;
+
+#
+# Fade in/out rate (how many frames to go from transparent to opaque)
+fade_rate = 50.0;
+
+#
+# Font to use for custom text
+font_string = "Segoe UI, 17";
+
+# Custom color r, g, b and alpha
+custom_r = 1.0;
+custom_g = 1.0;
+custom_b = 1.0;
+custom_a = 1.0;
+
+
+#
+####################### END MODIFIABLE CONFIGURATION #####################
+
+
+
+# These must be defined globally, apparently.  
+background_sprite = Sprite();
+bottom_sprite = Sprite();
+
+animation = "";
+global_opacity=0.0;
+at_frame = 0.0;
+
+
+# Set some common values
+screen_width=Window.GetWidth ();
+screen_height=Window.GetHeight ();
+
+# Arguably could be "configurable" above.  Offset is from center.
+animation_offset_x = 0;
+animation_offset_y = 0;
+text_offset_x = 0;
+text_offset_y = 125;
+bottom_offset_x = 0;
+bottom_offset_y = -70;
+
+
+if (fading == 0) {
+  global_opacity = 1.0;
+}
+
+
+# Set background image
+fun set_bg_image (bi_filename) {
+  background_sprite.SetOpacity(0);
+  background_sprite.SetPosition(10, 10, 10000);
+  background_image = Image(bi_filename);
+  background_sprite.SetOpacity(global_opacity);
+  resized_background_image = background_image.Scale(screen_width,screen_height);
+  background_sprite.SetImage(resized_background_image);
+  background_sprite.SetX(0);
+  background_sprite.SetY(0);
+  background_sprite.SetZ(-100);
+
+}
+
+# Fade In
+fun fadein () {
+  at_frame++;
+  global.global_opacity = (at_frame / fade_rate);
+  if (global.global_opacity > 1 ) { global.global_opacity = 1; }
+}
+
+# Set Bottom image
+fun set_bottom_image (bi_filename) {
+  bottom_sprite = Sprite();
+  bottom_sprite.SetPosition(10, 10, 10000);
+  bottom_image = Image(bi_filename);
+  bottom_sprite.SetImage(bottom_image);
+  #bottom_sprite.SetOpacity(global_opacity);
+  bottom_sprite.SetX(screen_width / 2 - bottom_image.GetWidth()  / 2 + bottom_offset_x);
+  bottom_sprite.SetY(screen_height  - bottom_image.GetHeight() / 2 + bottom_offset_y);
+  bottom_sprite.SetZ(-100);
+}
+
+
+######################### Prepare winlogo animation ##########################
+
+seven[0].image = Image("7-1.png");
+seven[0].sprite = Sprite(seven[0].image);
+seven[0].sprite.SetOpacity (0.0);  
+
+for (i = 1; i < 106; i++){
+  seven[i].image = Image("7-" + i + ".png");
+  seven[i].sprite = Sprite(seven[i].image);
+  seven[i].sprite.SetOpacity (0.0);  
+}
+
+x = 1;
+lasti = 0;
+loop = 0;
+
+fun refresh_winlogo ()  {
+  # The divisor controls the speed
+  if (Math.Int (x/3.5) < 105) i = (Math.Int (x / 3.5)) % 105;  
+  else{
+    i = 61 + (Math.Int (x / 3.5) - 61) % 45; 
+    zoom = i; 
+  } 
+  seven[i].sprite.SetX(screen_width  / 2 - seven[i].image.GetWidth()  / 2 + animation_offset_x);
+  seven[i].sprite.SetY(screen_height / 2 - seven[i].image.GetHeight() / 2 + animation_offset_y);
+  seven[i].sprite.SetZ(10);
+  seven[lasti].sprite.SetOpacity(0.0);
+  seven[i].sprite.SetOpacity(global_opacity);
+  lasti = i;
+  x++;
+
+}
+
+
+######################### Prepare busy animation ##########################
+
+busy[0].image = Image("Wait-0.png");
+busy[0].sprite = Sprite(busy[0].image);
+busy[0].sprite.SetOpacity (0.0);  
+
+for (i = 0; i < 18; i++){
+  busy[i].image = Image("Wait-" + i + ".png");
+  busy[i].sprite = Sprite(busy[i].image);
+  busy[i].sprite.SetOpacity (0.0);  
+}
+
+loop=0;
+i=0;
+
+fun refresh_busy ()  {
+
+  # 18 is full speed, 36 is half speed, etc.
+  loop = loop % 36;   
+
+  i = Math.Int(loop / 2);
+  busy[i].sprite.SetX(screen_width  / 2 - busy[i].image.GetWidth()  / 2 + animation_offset_x);
+  busy[i].sprite.SetY(screen_height / 2 - busy[i].image.GetHeight() / 2 + animation_offset_y);
+  busy[i].sprite.SetZ(10);
+  busy[lasti].sprite.SetOpacity(0.0);
+  busy[i].sprite.SetOpacity(global_opacity);
+  lasti=i;
+  loop = loop + 1;
+
+}
+############################################################################
+
+
+fun refresh () {
+  if ( animation == "winlogo" ){
+    refresh_winlogo();
+  } 
+  else 
+  if ( animation == "busy" ) {
+    refresh_busy();
+  }
+
+  if (fading == 1) {
+    fadein ();
+    set_bg_image();
+  }
+
+}
+
+Plymouth.SetRefreshFunction (refresh);
+ 
+
+
+fun do_offsets (text_image, bottom_image) {
+
+  #bottom_image = Image(my_bottom_image);
+  #text_image = Image(my_text_image);
+
+  bottom_offset_x = 0 ;
+  bottom_offset_y = -bottom_image.GetHeight()/2 - 70;
+
+  if (animation == "busy") {
+    animation_offset_x = 0-(text_image.GetWidth()/2 + 18);
+    animation_offset_y = 5;
+    text_offset_x = 0 ;
+    text_offset_y = 0;
+  }
+}
+ 
+
+#----------------------------------------- Dialogue --------------------------------
+
+status = "normal";
+
+fun dialog_setup()
+  {
+  local.box;
+  local.lock;
+  local.entry;
+  
+  box.image = Image("box.png");
+  lock.image = Image("lock.png");
+  entry.image = Image("entry.png");
+  
+  box.sprite = Sprite(box.image);
+  box.x = Window.GetWidth()  / 2 - box.image.GetWidth ()/2;
+  box.y = Window.GetHeight() / 2 - box.image.GetHeight()/2;
+  box.z = 10000;
+  box.sprite.SetPosition(box.x, box.y, box.z);
+  
+  lock.sprite = Sprite(lock.image);
+  lock.x = box.x + box.image.GetWidth()/2 - (lock.image.GetWidth() + entry.image.GetWidth()) / 2;
+  lock.y = box.y + box.image.GetHeight()/2 - lock.image.GetHeight()/2;
+  lock.z = box.z + 1;
+  lock.sprite.SetPosition(lock.x, lock.y, lock.z);
+  
+  entry.sprite = Sprite(entry.image);
+  entry.x = lock.x + lock.image.GetWidth();
+  entry.y = box.y + box.image.GetHeight()/2 - entry.image.GetHeight()/2;
+  entry.z = box.z + 1;
+  entry.sprite.SetPosition(entry.x, entry.y, entry.z);
+  
+  global.dialog.box = box;
+  global.dialog.lock = lock;
+  global.dialog.entry = entry;
+  global.dialog.bullet_image = Image("bullet.png");
+  dialog_opacity (1);
+  }
+  
+fun dialog_opacity(opacity)
+  {
+  dialog.box.sprite.SetOpacity (opacity);
+  dialog.lock.sprite.SetOpacity (opacity);
+  dialog.entry.sprite.SetOpacity (opacity);
+  for (index = 0; dialog.bullet[index]; index++)
+    {
+    dialog.bullet[index].sprite.SetOpacity(opacity);
+    }
+  }
+
+fun display_normal_callback ()
+  {
+  global.status = "normal";
+  if (global.dialog)
+    dialog_opacity (0);
+  }
+
+fun display_password_callback (prompt, bullets)
+  {
+  global.status = "password";
+  if (!global.dialog)
+  dialog_setup();
+  else
+  dialog_opacity(1);
+  for (index = 0; dialog.bullet[index] || index < bullets; index++)
+    {
+    if (!dialog.bullet[index])
+      {
+      dialog.bullet[index].sprite = Sprite(dialog.bullet_image);
+      dialog.bullet[index].x = dialog.entry.x + index * dialog.bullet_image.GetWidth();
+      dialog.bullet[index].y = dialog.entry.y + dialog.entry.image.GetHeight() / 2 - dialog.bullet_image.GetHeight() / 2;
+      dialog.bullet[index].z = dialog.entry.z + 1;
+      dialog.bullet[index].sprite.SetPosition(dialog.bullet[index].x, dialog.bullet[index].y, dialog.bullet[index].z);
+      }
+    if (index < bullets)
+      dialog.bullet[index].sprite.SetOpacity(1);
+    else
+      dialog.bullet[index].sprite.SetOpacity(0);
+    }
+  }
+
+Plymouth.SetDisplayNormalFunction(display_normal_callback);
+Plymouth.SetDisplayPasswordFunction(display_password_callback);
+
+#----------------------------------------- Progress Bar --------------------------------
+
+progress_box.image = Image("progress_box.png");
+#progress_box.sprite = Sprite(progress_box.image);
+
+progress_box.x = Window.GetWidth()  / 2 - progress_box.image.GetWidth()  / 2;
+progress_box.y = Window.GetHeight() * 0.75 - progress_box.image.GetHeight() / 2;
+progress_box.sprite.SetPosition(progress_box.x, progress_box.y, 0);
+
+progress_bar.original_image = Image("progress_bar.png");
+#progress_bar.sprite = Sprite();
+
+progress_bar.x = Window.GetWidth()  / 2 - progress_bar.original_image.GetWidth() / 2;
+progress_bar.y = Window.GetHeight() / 2 * 1.5  - progress_box.image.GetHeight() / 2 + (progress_box.image.GetHeight() - progress_bar.original_image.GetHeight()) / 2;
+progress_bar.sprite.SetPosition(progress_bar.x, progress_bar.y, 1);
+
+fun progress_callback (duration, progress)
+  {
+  if (progress_bar.image.GetWidth () != Math.Int (progress_bar.original_image.GetWidth () * progress))
+    {
+    progress_bar.image = progress_bar.original_image.Scale(progress_bar.original_image.GetWidth(progress_bar.original_image) * progress, progress_bar.original_image.GetHeight());
+    progress_bar.sprite.SetImage (progress_bar.image);
+    }
+  }
+
+#Plymouth.SetBootProgressFunction(progress_callback);
+
+#----------------------------------------- Quit --------------------------------
+
+fun quit_callback ()
+{
+}
+
+Plymouth.SetQuitFunction(quit_callback);
+
+#----------------------------------------- Message --------------------------------
+
+message_sprite = Sprite();
+message_sprite.SetPosition(10, 10, 10000);
+
+
+fun message_callback_ORIG (text)
+{
+  message_image = Image.Text(text, 1, 1, 1, 1, font_string);
+  message_sprite.SetImage(message_image);
+  #message_sprite.SetOpacity(global_opacity);
+  message_sprite.SetX(Window.GetWidth () / 2 - message_image.GetWidth() / 2 + text_offset_x );
+  message_sprite.SetY(Window.GetHeight () / 2 - message_image.GetHeight() / 2 + text_offset_y );
+  message_sprite.SetZ(-100);  
+}
+
+fun message_callback (message_image)
+{
+  message_sprite.SetImage(message_image);
+  message_sprite.SetX(Window.GetWidth () / 2 - message_image.GetWidth() / 2 + text_offset_x );
+  message_sprite.SetY(Window.GetHeight () / 2 - message_image.GetHeight() / 2 + text_offset_y );
+  message_sprite.SetZ(-100);  
+}
+ 
+#Plymouth.SetMessageFunction(message_callback);
+#Plymouth.SetUpdateStatusFunction(message_callback);
+
+if (Plymouth.GetMode () == "boot")
+{ 
+  animation = startup_animation;
+  if (startup_text != "" ) {
+     message_image = Image.Text(startup_text, custom_r, custom_g, custom_b, custom_a, font_string);
+  } else {
+     message_image = Image("starting_windows.png");
+  }
+  do_offsets(message_image, Image(startup_bottom_image_filename));
+  set_bg_image (startup_background_image_filename ) ;
+  set_bottom_image(startup_bottom_image_filename);
+  message_callback(message_image);
+
+}
+else if (Plymouth.GetMode () == "shutdown")
+{ 
+  animation = shutdown_animation;
+  if (shutdown_text != "" ) {
+     message_image = Image.Text(shutdown_text, custom_r, custom_g, custom_b, custom_a, font_string);
+  } else {
+     message_image = Image("shutting_down.png");
+  }
+
+  do_offsets(message_image, Image(shutdown_bottom_image_filename));
+  set_bg_image (shutdown_background_image_filename ) ;
+  set_bottom_image(shutdown_bottom_image_filename);
+  message_callback(message_image);
+}
+else if (Plymouth.GetMode () == "suspend")
+{ 
+  animation = suspend_animation;
+  if (suspend_text != "" ) {
+     message_image = Image.Text(suspend_text, custom_r, custom_g, custom_b, custom_a, font_string);
+  } else {
+     message_image = Image("suspending.png");
+  }
+
+  do_offsets(message_image, Image(suspend_bottom_image_filename));
+  set_bg_image (suspend_background_image_filename ) ;
+  set_bottom_image(suspend_bottom_image_filename);
+  message_callback(message_image);
+}
+else if (Plymouth.GetMode () == "resume")
+{ 
+  animation = resume_animation;
+  if (resume_text != "" ) {
+     message_image = Image.Text(resume_text, custom_r, custom_g, custom_b, custom_a, font_string);
+  } else {
+     message_image = Image("resuming_windows.png");
+  }
+
+  do_offsets(message_image, Image(resume_bottom_image_filename));
+  set_bg_image (resume_background_image_filename ) ;
+  set_bottom_image(resume_bottom_image_filename);
+  message_callback(message_image);
+}
+else
+{
+    set_bg_image (startup_background_image_filename);
+    set_bottom_image(startup_bottom_image_filename);
+}
+
+set_bg_image();
+
+
+if (1 == 0)
+{
+
+# Default Message if nothing else supplied
+
+newtext="Starting Windows";
+my_image = Image.Text(newtext, 1,1,1,1, "Segoe UI, 17");
+message_sprite.SetImage(my_image);
+message_sprite.SetX(Window.GetWidth ()  / 2 - my_image.GetWidth()  / 2);
+message_sprite.SetY(Window.GetHeight () / 2 - my_image.GetHeight() / 2 + 125);
+message_sprite.SetZ(-100);  
+}

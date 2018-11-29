@@ -1,0 +1,8 @@
+[Plymouth Theme]
+Name=Leaf
+Description=A floating mint logo 
+ModuleName=script
+
+[script]
+ImageDir=/usr/share/plymouth/themes/ice-cream
+ScriptFile=/usr/share/plymouth/themes/ice-cream/ice-cream.script

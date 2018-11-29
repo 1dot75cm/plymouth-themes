@@ -1,0 +1,8 @@
+[Plymouth Theme]
+Name=metro
+Description=metro plymouth 
+ModuleName=script
+
+[script]
+ImageDir=/usr/share/plymouth/themes/metro
+ScriptFile=/usr/share/plymouth/themes/metro/metro.script

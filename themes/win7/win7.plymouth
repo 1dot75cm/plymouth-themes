@@ -1,0 +1,9 @@
+[Plymouth Theme]
+Name=win7
+Description=A Windows 7 lookalike theme that has configurable text and backgrounds.
+ModuleName=script
+
+
+[script]
+ImageDir=/usr/share/plymouth/themes/win7
+ScriptFile=/usr/share/plymouth/themes/win7/win7.script

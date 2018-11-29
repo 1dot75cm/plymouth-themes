@@ -1,0 +1,10 @@
+[Plymouth Theme]
+Name=winxp
+Description=plymouth
+ModuleName=script
+
+[script]
+ImageDir=/usr/share/plymouth/themes/winxp
+ScriptFile=/usr/share/plymouth/themes/winxp/winxp.script
+
+
